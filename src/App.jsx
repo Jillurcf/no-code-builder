@@ -5,6 +5,7 @@ import TopBar from './components/TopBar';
 import styled from 'styled-components';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import Builder from './components/Builder';
 
 const AppWrapper = styled.div`
   display: flex;
@@ -82,6 +83,7 @@ const App = () => {
                 onUpdateElement={updateElement}
                 onRemoveElement={removeElement}
               />
+              
             </>
           )}
         </MainWrapper>

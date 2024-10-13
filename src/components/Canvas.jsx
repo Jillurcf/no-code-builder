@@ -6,11 +6,10 @@ import ImageUploader from './ImageUploader';
 
 const CanvasWrapper = styled.div`
   width: 100%;
-  // height: 500px;
+  height: auto;
   border: 2px dashed #ccc;
   padding: 20px;
   background-color: #f0f0f0;
-  overflow-y: auto; /* Enable scroll for large content */
 `;
 
 const CanvasItem = styled.div`
