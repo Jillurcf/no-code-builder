@@ -1,25 +1,17 @@
-import React from "react";
+import React from 'react';
 
 const MenuColumnComponent = ({ elementType, properties, onChange }) => {
-  const handleFontSizeChange = (e) => {
-    onChange("fontSize", e.target.value);
-  };
-
-  const handleColorChange = (e) => {
-    onChange("color", e.target.value);
-  };
-
   return (
     <div>
-      {elementType === "text" && (
+      <h3>Edit {elementType}</h3>
+      {elementType === 'text' && (
         <>
           <div>
             <label>Font Size:</label>
             <input
               type="number"
               value={properties.fontSize}
-              onChange={handleFontSizeChange}
-              min="1" // Minimum font size
+              onChange={(e) => onChange('fontSize', parseInt(e.target.value, 10))}
             />
           </div>
           <div>
@@ -27,7 +19,7 @@ const MenuColumnComponent = ({ elementType, properties, onChange }) => {
             <input
               type="color"
               value={properties.color}
-              onChange={handleColorChange}
+              onChange={(e) => onChange('color', e.target.value)}
             />
           </div>
         </>

@@ -1,10 +1,18 @@
 import React from 'react';
 import { useDrop } from 'react-dnd';
+import { Rnd } from 'react-rnd';
 
-const Canvas = ({ elements, onElementDrop, onSelectElement }) => {
-  const [, drop] = useDrop({
+const Canvas = ({ elements, onSelectElement, onUpdateElement }) => {
+  const [{ isOver }, drop] = useDrop({
     accept: 'element',
-    drop: (item) => onElementDrop(item),
+    drop: (item) => {
+      const newElement = {
+        ...item,
+        left: 100,
+        top: 100,
+      };
+      onUpdateElement(elements.length, newElement);
+    },
   });
 
   return (
@@ -14,30 +22,60 @@ const Canvas = ({ elements, onElementDrop, onSelectElement }) => {
         flex: 1,
         border: '2px dashed #ccc',
         padding: '20px',
-        minHeight: '100vh',
         background: '#fff',
+        position: 'relative',
       }}
     >
-      {elements.map((element) => (
-        <div
+      {elements.map((element, index) => (
+        <Rnd
           key={element.id}
-          onClick={() => onSelectElement(element.id)}
-          style={{
-            marginBottom: '10px',
-            cursor: 'pointer',
-            fontSize: `${element.fontSize}px`, // Use px for font size
-            color: element.color,
-            fontWeight: element.bold ? 'bold' : 'normal',
-            fontStyle: element.italic ? 'italic' : 'normal',
+          style={{ border: '1px solid #ccc', padding: '5px', cursor: 'move' }}
+          position={{ x: element.left, y: element.top }}
+          size={{ width: element.width, height: element.height }}
+          onDragStop={(e, d) => {
+            const updatedElement = { ...element, left: d.x, top: d.y };
+            onUpdateElement(index, updatedElement);
           }}
-          contentEditable={element.type === 'text'} // Allows text editing
-          suppressContentEditableWarning={true} // To avoid warnings
+          onResizeStop={(e, direction, ref, delta, position) => {
+            const updatedElement = {
+              ...element,
+              width: ref.offsetWidth,
+              height: ref.offsetHeight,
+              left: position.x,
+              top: position.y,
+            };
+            onUpdateElement(index, updatedElement);
+          }}
         >
-          {element.type === 'text' && element.content}
-          {element.type === 'image' && (
-            <img src={element.content} alt="Element" width="150" />
+          {element.type === 'text' ? (
+            <div
+              contentEditable
+              suppressContentEditableWarning
+              style={{
+                fontSize: `${element.fontSize}px`,
+                color: element.color,
+                minHeight: '20px',
+                padding: '5px',
+                border: 'none',
+                outline: 'none',
+                width: '100%',
+                height: '100%',
+                fontWeight: element.isBold ? 'bold' : 'normal',
+                fontStyle: element.isItalic ? 'italic' : 'normal',
+                textAlign: element.textAlign || 'left',
+              }}
+              onBlur={(e) => {
+                const updatedElement = { ...element, content: e.target.innerText };
+                onUpdateElement(index, updatedElement);
+              }}
+              onClick={() => onSelectElement(index)}
+            >
+              {element.content}
+            </div>
+          ) : (
+            <img src={element.content} alt="img" style={{ maxWidth: '100%', maxHeight: '100%' }} />
           )}
-        </div>
+        </Rnd>
       ))}
     </div>
   );
