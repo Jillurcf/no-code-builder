@@ -1,76 +1,45 @@
-import React from "react";
-import { useDrop } from "react-dnd";
-import styled from "styled-components";
-import TextEditor from "./TextEditor";
-import ImageUploader from "./ImageUploader";
+import React from 'react';
+import { useDrop } from 'react-dnd';
 
-const CanvasWrapper = styled.div`
-  width: 100%;
-  height: auto;
-  border: 2px dashed #ccc;
-  padding: 20px;
-  background-color: #f0f0f0;
-`;
-
-const CanvasItem = styled.div`
-  margin-bottom: 20px;
-`;
-
-const Canvas = ({
-  elements,
-  onAddElement,
-  onUpdateElement,
-  onRemoveElement,
-  onElementSelect
-}) => {
-  const [{ isOver }, drop] = useDrop({
-    accept: "element",
-    drop: (item) => onAddElement(item),
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-    }),
+const Canvas = ({ elements, onElementDrop, onSelectElement }) => {
+  const [, drop] = useDrop({
+    accept: 'element',
+    drop: (item) => onElementDrop(item),
   });
 
   return (
-    <CanvasWrapper
+    <div
       ref={drop}
-      style={{ backgroundColor: isOver ? "#e0e0e0" : "#f0f0f0" }}
+      style={{
+        flex: 1,
+        border: '2px dashed #ccc',
+        padding: '20px',
+        minHeight: '100vh',
+        background: '#fff',
+      }}
     >
-      {elements.map((element, index) => (
-        // <CanvasItem key={index}>
-        //   {element.type === 'text' && (
-        //     <TextEditor
-        //       content={element.content}
-        //       onChange={(newContent) => onUpdateElement(index, newContent)}
-        //     />
-        //   )}
-        //   {element.type === 'image' && (
-        //     <ImageUploader
-        //       imageUrl={element.content}
-        //       onUpload={(url) => onUpdateElement(index, url)}
-        //     />
-        //   )}
-        //   <button onClick={() => onRemoveElement(index)}>Remove</button>
-        // </CanvasItem>
-        <CanvasItem key={index} onClick={() => onElementSelect(index)}>
-          {" "}
-          {/* Notify selection */}
-          {element.type === "text" && (
-            <TextEditor
-              content={element.content}
-              onChange={(newContent) => onUpdateElement(index, newContent)}
-            />
+      {elements.map((element) => (
+        <div
+          key={element.id}
+          onClick={() => onSelectElement(element.id)}
+          style={{
+            marginBottom: '10px',
+            cursor: 'pointer',
+            fontSize: `${element.fontSize}px`, // Use px for font size
+            color: element.color,
+            fontWeight: element.bold ? 'bold' : 'normal',
+            fontStyle: element.italic ? 'italic' : 'normal',
+          }}
+          contentEditable={element.type === 'text'} // Allows text editing
+          suppressContentEditableWarning={true} // To avoid warnings
+        >
+          {element.type === 'text' && element.content}
+          {element.type === 'image' && (
+            <img src={element.content} alt="Element" width="150" />
           )}
-          {element.type === "image" && (
-            <ImageUploader
-              imageUrl={element.content}
-              onUpload={(url) => onUpdateElement(index, url)}
-            />
-          )}
-          <button onClick={() => onRemoveElement(index)}>Remove</button>
-        </CanvasItem>
+        </div>
       ))}
-    </CanvasWrapper>
+    </div>
   );
 };
 

@@ -1,80 +1,52 @@
-// import React, { useState } from 'react';
-// import MenuColumnComponent from './MenuColumn';
+import React, { useEffect, useState } from 'react';
 
-// const MenuColumnParent = ({ selectedElement }) => {
-//   const [textProperties, setTextProperties] = useState({ fontSize: 16, color: '#000000' });
-//   const [imageProperties, setImageProperties] = useState({ width: 300, height: 300 });
-
-//   const handleTextChange = (property, value) => {
-//     setTextProperties({ ...textProperties, [property]: value });
-//   };
-
-//   const handleImageChange = (property, value) => {
-//     setImageProperties({ ...imageProperties, [property]: value });
-//   };
-
-//   return (
-//     <div>
-//       <MenuColumnComponent
-//         selectedElement={selectedElement}
-//         onTextChange={handleTextChange}
-//         onImageChange={handleImageChange}
-//       />
-//     </div>
-//   );
-// };
-
-// export default MenuColumnParent;
-
-import React, { useState, useEffect } from 'react';
-import MenuColumnComponent from './MenuColumn';
-
-const MenuColumnParent = ({ selectedElement }) => {
+const MenuColumnParent = ({ selectedElement, onUpdateElement }) => {
   const [textProperties, setTextProperties] = useState({ fontSize: 16, color: '#000000' });
-  const [imageProperties, setImageProperties] = useState({ width: 300, height: 300 });
 
   useEffect(() => {
-    // Reset properties when the selectedElement changes
-    if (selectedElement === 'text') {
-      console.log('Selected Element:', selectedElement);
-      setTextProperties({ fontSize: 16, color: '#000000' }); // Reset text properties to default
-    } else if (selectedElement === 'image') {
-      setImageProperties({ width: 300, height: 300 }); // Reset image properties to default
+    if (selectedElement) {
+      setTextProperties({
+        fontSize: selectedElement.fontSize,
+        color: selectedElement.color,
+      });
     }
   }, [selectedElement]);
 
   const handleTextChange = (property, value) => {
-    setTextProperties({ ...textProperties, [property]: value });
-  };
-
-  const handleImageChange = (property, value) => {
-    setImageProperties({ ...imageProperties, [property]: value });
+    if (selectedElement) {
+      const updatedElement = { ...selectedElement, [property]: value };
+      onUpdateElement(selectedElement.index, updatedElement);
+      setTextProperties({ ...textProperties, [property]: value }); // Update local state for immediate feedback
+    }
   };
 
   return (
-    <div>
+    <div style={{ padding: '10px', border: '1px solid #ccc' }}>
       {selectedElement ? (
         <>
-          {selectedElement === 'text' && (
-            <MenuColumnComponent
-              elementType="text"
-              properties={textProperties}
-              onChange={handleTextChange}
+          <div>
+            <label>Font Size:</label>
+            <input
+              type="number"
+              value={textProperties.fontSize}
+              onChange={(e) => handleTextChange('fontSize', Number(e.target.value))}
             />
-          )}
-          {selectedElement === 'image' && (
-            <MenuColumnComponent
-              elementType="image"
-              properties={imageProperties}
-              onChange={handleImageChange}
+          </div>
+          <div>
+            <label>Color:</label>
+            <input
+              type="color"
+              value={textProperties.color}
+              onChange={(e) => handleTextChange('color', e.target.value)}
             />
-          )}
+          </div>
         </>
       ) : (
-        <p>Select an element to edit its properties.</p> // Message when nothing is selected
+        <p>Select an element to edit its properties.</p>
       )}
     </div>
   );
 };
 
 export default MenuColumnParent;
+

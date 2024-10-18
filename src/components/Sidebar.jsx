@@ -1,73 +1,50 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
+import React from 'react';
 import { useDrag } from 'react-dnd';
-import MenuColumnParent from './MenuColumnParent';
 
-// Styled components for layout and appearance
-const SidebarWrapper = styled.div`
-  width: 400px;
-  background-color: #e9ecef;
-  padding: 10px;
-`;
-
-const Menu = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-
-const MenuColumn = styled.div`
-  width: 50%;
-`;
-
-const MenuItem = styled.div`
-  padding: 20px;
-  margin-bottom: 10px;
-  background-color: #f8f9fa;
-  cursor: pointer;
-  text-align: center;
-`;
-
-// Sidebar component
 const Sidebar = () => {
-  const [selectedElement, setSelectedElement] = useState(null);
-
-  // Drag for Text element
-  const [{ isDragging }, drag] = useDrag({
+  const [{ isDragging: isTextDragging }, dragText] = useDrag({
     type: 'element',
-    item: { type: 'text', content: 'Text Element' },
+    item: { type: 'text', content: 'Sample Text' },
     collect: (monitor) => ({
       isDragging: !!monitor.isDragging(),
     }),
   });
 
-  // Drag for Image element
-  const [{ isDraggingImage }, dragImage] = useDrag({
+  const [{ isDragging: isImageDragging }, dragImage] = useDrag({
     type: 'element',
-    item: { type: 'image', content: 'Image Element' },
+    item: { type: 'image', content: 'https://via.placeholder.com/150' },
     collect: (monitor) => ({
-      isDraggingImage: !!monitor.isDragging(),
+      isDragging: !!monitor.isDragging(),
     }),
   });
 
-  // Handle submenu visibility toggle
-  const handleElementClick = (elementType) => {
-    setSelectedElement(elementType); // Set the selected element to text or image
-  };
-
   return (
-    <SidebarWrapper>
-      <Menu>
-        {/* First column */}
-        <MenuColumn>
-          <MenuItem ref={drag} onClick={() => handleElementClick('text')}>Text</MenuItem>
-          <MenuItem ref={dragImage} onClick={() => handleElementClick('image')}>Image</MenuItem>
-        </MenuColumn>
-        {/* Submenu controlled in MenuColumnParent */}
-      <div className='px-2'>
-      <MenuColumnParent selectedElement={selectedElement} />
+    <div style={{ width: '200px', padding: '10px', background: '#f0f0f0' }}>
+      <div
+        ref={dragText}
+        style={{
+          opacity: isTextDragging ? 0.5 : 1,
+          padding: '10px',
+          backgroundColor: '#ddd',
+          marginBottom: '10px',
+          cursor: 'pointer',
+        }}
+      >
+        Drag Text
       </div>
-      </Menu>
-    </SidebarWrapper>
+      <div
+        ref={dragImage}
+        style={{
+          opacity: isImageDragging ? 0.5 : 1,
+          padding: '10px',
+          backgroundColor: '#ddd',
+          marginBottom: '10px',
+          cursor: 'pointer',
+        }}
+      >
+        Drag Image
+      </div>
+    </div>
   );
 };
 
